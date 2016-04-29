@@ -145,26 +145,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // WRITE YOUR updateVoronoiDiagram FUNCTION HERE
       updateVoronoiDiagram = function () {
-         var i, j, k, currentDistance, lowestDistance, whichK, imageData, data;
+         var i, j, k, rect, currentDistance, lowestDistance, whichK, imageData, data;
          lowestDistance = 361;
          whichK = 0;
+         rect = voronoiCanvas.getBoundingClientRect();
+
+         /*voronoiContext.beginPath();
+         voronoiContext.arc(50, 50, 5, 0, 2 * Math.PI, false);
+         voronoiContext.fillStyle = 'rgb(255, 255, 255)';
+         voronoiContext.fill();*/
 
          for (k = 0; k < generatingPoints.length; k += 1) {
             // Draw the outer circle.
             voronoiContext.beginPath();
-            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 5, 0, 2 * Math.PI, false);
+            voronoiContext.arc(generatingPoints[k].x - rect.left, generatingPoints[k].y - rect.top, 5, 0, 2 * Math.PI, false);
             voronoiContext.fillStyle = 'rgb(0, 0, 0)';
             voronoiContext.fill();
 
             // Draw the middle circle.
             voronoiContext.beginPath();
-            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 4, 0, 2 * Math.PI, false);
+            voronoiContext.arc(generatingPoints[k].x - rect.left, generatingPoints[k].y - rect.top, 4, 0, 2 * Math.PI, false);
             voronoiContext.fillStyle = 'rgb(255, 255, 255)';
             voronoiContext.fill();
 
             // Draw the inner circle.
             voronoiContext.beginPath();
-            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 3, 0, 2 * Math.PI, false);
+            voronoiContext.arc(generatingPoints[k].x - rect.left, generatingPoints[k].y - rect.top, 3, 0, 2 * Math.PI, false);
             voronoiContext.fillStyle = generatingPoints[k].color;
             voronoiContext.fill();
          }
@@ -173,10 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
             for (j = 0; j < voronoiCanvas.height; j += 1) {
                for (k = 0; k < generatingPoints.length; k += 1) {
                   //set the image data for the coloration of pixels
-                  imageData = voronoiContext.getImageData(i, j, i, j);
+                  imageData = voronoiContext.getImageData(rect.left, rect.top, voronoiCanvas.width, voronoiCanvas.height);
                   data = imageData.data;
 
-                  currentDistance = Math.sqrt(Math.pow(i - generatingPoints[k].x, 2) + Math.pow(j - generatingPoints[k].y, 2));
+                  currentDistance = Math.sqrt(Math.pow(i - generatingPoints[k].x - rect.left, 2) + Math.pow(j - generatingPoints[k].y - rect.top, 2));
                   if (currentDistance < lowestDistance) {
                      lowestDistance = currentDistance;
                      whichK = k;
@@ -225,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function () {
          ripplesContext.beginPath();
          ripplesContext.arc(state.x, state.y, state.radius, 0, 2 * Math.PI, false);
          ripplesContext.fillStyle = 'rgb(0, 17, 51)';
-         ripplesContext.closePath();
          ripplesContext.fill();
          state.radius += state.radiusIncrement;
          state.opacity += state.opacityIncrement;
@@ -233,7 +238,6 @@ document.addEventListener('DOMContentLoaded', function () {
             ripplesContext.beginPath();
             ripplesContext.arc(state.x, state.y, state.radius, 0, 2 * Math.PI, false);
             ripplesContext.fillStyle = 'rgba(200, 200, 200, ' + state.opacity + ')';
-            ripplesContext.closePath();
             ripplesContext.fill();
             setTimeout(function () {
                drawRipple(state);
