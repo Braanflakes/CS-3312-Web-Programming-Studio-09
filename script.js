@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // WRITE YOUR updateSketchyCanvas FUNCTION HERE
       updateSketchyCanvas = function () {
-         
+
          // Draw the outer circle.
          sketchyContext.beginPath();
          sketchyContext.arc(275, 75, 60, 0, 2 * Math.PI, false);
          sketchyContext.fill();
-         
+
          // Draw the green arc.
          sketchyContext.beginPath();
          sketchyContext.moveTo(275, 75);
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
          sketchyContext.closePath();
          sketchyContext.fillStyle = 'rgb(0, 255, 0)';
          sketchyContext.fill();
-         
+
          // Draw the red arc.
          sketchyContext.beginPath();
          sketchyContext.moveTo(275, 75);
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
          sketchyContext.closePath();
          sketchyContext.fillStyle = 'rgb(255, 0, 0)';
          sketchyContext.fill();
-         
+
          // Draw the blue arc.
          sketchyContext.beginPath();
          sketchyContext.moveTo(275, 75);
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
          sketchyContext.closePath();
          sketchyContext.fillStyle = 'rgb(0, 0, 255)';
          sketchyContext.fill();
-         
+
          // Draw the yellow arc.
          sketchyContext.beginPath();
          sketchyContext.moveTo(275, 75);
@@ -62,13 +62,13 @@ document.addEventListener('DOMContentLoaded', function () {
          sketchyContext.closePath();
          sketchyContext.fillStyle = 'rgb(255, 255, 0)';
          sketchyContext.fill();
-         
+
          // Draw the inner black circle.
          sketchyContext.beginPath();
          sketchyContext.arc(275, 75, 20, 0, 2 * Math.PI, false);
          sketchyContext.fillStyle = 'rgb(0, 0, 0)';
          sketchyContext.fill();
-         
+
          // Draw the non-filled 'L'
          sketchyContext.beginPath();
          sketchyContext.moveTo(290, 200);
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
          sketchyContext.lineTo(290, 200);
          sketchyContext.strokeStyle = 'rgb(0, 150, 0)';
          sketchyContext.stroke();
-         
+
          // Draw the filled 'L'
          sketchyContext.beginPath();
          sketchyContext.moveTo(220, 200);
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
          sketchyContext.lineTo(220, 200);
          sketchyContext.fillStyle = 'rgb(220, 0, 20)';
          sketchyContext.fill();
-         
+
          // Draw the bezier curve.
          sketchyContext.beginPath();
          sketchyContext.moveTo(120, 50);
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
          sketchyContext.lineCap = 'round';
          sketchyContext.lineWidth = 10;
          sketchyContext.stroke();
-         };
+      };
 
       // When the snapshot button is clicked, show a snapshot of the canvas that the user can save as an image file.
       document.querySelector('#sketchy-snapshot').addEventListener('click', function () {
@@ -140,31 +140,52 @@ document.addEventListener('DOMContentLoaded', function () {
             color: 'rgb(' + Math.floor(((Math.random() * 255) + 1)) + ', ' + Math.floor(((Math.random() * 255) + 1)) + ', ' + Math.floor(((Math.random() * 255) + 1)) + ')',
             x: ev.clientX,
             y: ev.clientY
-         }
+         };
       };
 
       // WRITE YOUR updateVoronoiDiagram FUNCTION HERE
       updateVoronoiDiagram = function () {
-         var i, j, currentDistance, lowestDistance, whichK;
-         
+         var i, j, k, currentDistance, lowestDistance, whichK, imageData, data;
          lowestDistance = 361;
          whichK = 0;
-         
+
+         for (k = 0; k < generatingPoints.length; k += 1) {
+            // Draw the outer circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 5, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = 'rgb(0, 0, 0)';
+            voronoiContext.fill();
+
+            // Draw the middle circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 4, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = 'rgb(255, 255, 255)';
+            voronoiContext.fill();
+
+            // Draw the inner circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 3, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = generatingPoints[k].color;
+            voronoiContext.fill();
+         }
+
          for (i = 0; i < voronoiCanvas.width; i += 1) {
             for (j = 0; j < voronoiCanvas.height; j += 1) {
                for (k = 0; k < generatingPoints.length; k += 1) {
+                  //set the image data for the coloration of pixels
+                  imageData = voronoiContext.getImageData(i, j, i, j);
+                  data = imageData.data;
+
                   currentDistance = Math.sqrt(Math.pow(i - generatingPoints[k].x, 2) + Math.pow(j - generatingPoints[k].y, 2));
                   if (currentDistance < lowestDistance) {
                      lowestDistance = currentDistance;
                      whichK = k;
                   }
                }
-               
+               data[0] = generatingPoints[whichK].color;
                voronoiContext.putImageData(imageData, i, j);
             }
          }
-         
-         
       };
 
       // When the canvas is clicked, add a generating point and redraw the Voronoi diagram.
