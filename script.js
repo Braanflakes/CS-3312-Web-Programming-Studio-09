@@ -145,25 +145,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // WRITE YOUR updateVoronoiDiagram FUNCTION HERE
       updateVoronoiDiagram = function () {
-         var i, j, k, currentDistance, lowestDistance, whichK;
-
+         var i, j, k, currentDistance, lowestDistance, whichK, imageData, data;
          lowestDistance = 361;
          whichK = 0;
+
+         for (k = 0; k < generatingPoints.length; k += 1) {
+            // Draw the outer circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 5, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = 'rgb(0, 0, 0)';
+            voronoiContext.fill();
+
+            // Draw the middle circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 4, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = 'rgb(255, 255, 255)';
+            voronoiContext.fill();
+
+            // Draw the inner circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 3, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = generatingPoints[k].color;
+            voronoiContext.fill();
+         }
 
          for (i = 0; i < voronoiCanvas.width; i += 1) {
             for (j = 0; j < voronoiCanvas.height; j += 1) {
                for (k = 0; k < generatingPoints.length; k += 1) {
+                  //set the image data for the coloration of pixels
+                  imageData = voronoiContext.getImageData(i, j, i, j);
+                  data = imageData.data;
+
                   currentDistance = Math.sqrt(Math.pow(i - generatingPoints[k].x, 2) + Math.pow(j - generatingPoints[k].y, 2));
                   if (currentDistance < lowestDistance) {
                      lowestDistance = currentDistance;
                      whichK = k;
                   }
                }
-
-               //voronoiContext.putImageData(imageData, i, j);
+               data[0] = generatingPoints[whichK].color;
+               voronoiContext.putImageData(imageData, i, j);
             }
          }
-
       };
 
       // When the canvas is clicked, add a generating point and redraw the Voronoi diagram.
@@ -210,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
          if (state.opacity > 0) {
             ripplesContext.beginPath();
             ripplesContext.arc(state.x, state.y, state.radius, 0, 2 * Math.PI, false);
-            ripplesContext.fillStyle = 'rgba(255, 255, 255, ' + state.opacity + ')';
+            ripplesContext.fillStyle = 'rgba(200, 200, 200, ' + state.opacity + ')';
             ripplesContext.closePath();
             ripplesContext.fill();
             setTimeout(function () {
