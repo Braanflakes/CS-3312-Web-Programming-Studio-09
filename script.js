@@ -221,6 +221,25 @@ document.addEventListener('DOMContentLoaded', function () {
       ripplesContext.fillRect(0, 0, ripplesCanvas.width, ripplesCanvas.height);
 
       // WRITE YOUR drawRipple FUNCTION HERE
+      drawRipple = function (state) {
+         ripplesContext.beginPath();
+         ripplesContext.arc(state.x, state.y, state.radius, 0, 2 * Math.PI, false);
+         ripplesContext.fillStyle = 'rgb(0, 17, 51)';
+         ripplesContext.closePath();
+         ripplesContext.fill();
+         state.radius += state.radiusIncrement;
+         state.opacity += state.opacityIncrement;
+         if (state.opacity > 0) {
+            ripplesContext.beginPath();
+            ripplesContext.arc(state.x, state.y, state.radius, 0, 2 * Math.PI, false);
+            ripplesContext.fillStyle = 'rgba(200, 200, 200, ' + state.opacity + ')';
+            ripplesContext.closePath();
+            ripplesContext.fill();
+            setTimeout(function () {
+               drawRipple(state);
+            }, state.timeIncrement);
+         }
+      };
 
       // When the mouse is moved over the canvas, animate an expanding and fading ripple.
       ripplesCanvas.addEventListener('click', function (ev) {
