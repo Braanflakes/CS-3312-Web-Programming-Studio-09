@@ -2,7 +2,7 @@
 
 // CS 3312, spring 2016
 // Studio 9
-// YOUR NAME(S): 
+// YOUR NAME(S): Brendan Murphey, Dobby Maxwell
 
 // All the code below will be run once the page content finishes loading.
 document.addEventListener('DOMContentLoaded', function () {
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // When the snapshot button is clicked, show a snapshot of the canvas that the user can save as an image file.
       document.querySelector('#sketchy-snapshot').addEventListener('click', function () {
-         window.open(sketchyCanvas.toDataURL(), 'Canvas snapshot');
+         
       }, false);
 
       // Draw on the canvas.
@@ -136,61 +136,59 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // WRITE YOUR getPointFromEvent FUNCTION HERE
       getPointFromEvent = function (ev) {
+         var rect;
+         rect = voronoiCanvas.getBoundingClientRect();
+
          return {
             color: 'rgb(' + Math.floor(((Math.random() * 255) + 1)) + ', ' + Math.floor(((Math.random() * 255) + 1)) + ', ' + Math.floor(((Math.random() * 255) + 1)) + ')',
-            x: ev.clientX,
-            y: ev.clientY
+            x: ev.clientX - rect.left,
+            y: ev.clientY - rect.top
          };
       };
 
       // WRITE YOUR updateVoronoiDiagram FUNCTION HERE
       updateVoronoiDiagram = function () {
-         var i, j, k, rect, currentDistance, lowestDistance, whichK, imageData, data;
+         var i, j, k, currentDistance, lowestDistance, whichK;
          lowestDistance = 361;
+         currentDistance = 0;
          whichK = 0;
-         rect = voronoiCanvas.getBoundingClientRect();
 
-         /*voronoiContext.beginPath();
-         voronoiContext.arc(50, 50, 5, 0, 2 * Math.PI, false);
-         voronoiContext.fillStyle = 'rgb(255, 255, 255)';
-         voronoiContext.fill();*/
-
-         for (k = 0; k < generatingPoints.length; k += 1) {
-            // Draw the outer circle.
-            voronoiContext.beginPath();
-            voronoiContext.arc(generatingPoints[k].x - rect.left, generatingPoints[k].y - rect.top, 5, 0, 2 * Math.PI, false);
-            voronoiContext.fillStyle = 'rgb(0, 0, 0)';
-            voronoiContext.fill();
-
-            // Draw the middle circle.
-            voronoiContext.beginPath();
-            voronoiContext.arc(generatingPoints[k].x - rect.left, generatingPoints[k].y - rect.top, 4, 0, 2 * Math.PI, false);
-            voronoiContext.fillStyle = 'rgb(255, 255, 255)';
-            voronoiContext.fill();
-
-            // Draw the inner circle.
-            voronoiContext.beginPath();
-            voronoiContext.arc(generatingPoints[k].x - rect.left, generatingPoints[k].y - rect.top, 3, 0, 2 * Math.PI, false);
-            voronoiContext.fillStyle = generatingPoints[k].color;
-            voronoiContext.fill();
-         }
-
-         for (i = 0; i < voronoiCanvas.width; i += 1) {
-            for (j = 0; j < voronoiCanvas.height; j += 1) {
+         // Loop through all pixels, and find the shortest distance between the current pixel and a generatingPoint.
+         for (i = 0; i < 360; i += 1) {
+            for (j = 0; j < 360; j += 1) {
                for (k = 0; k < generatingPoints.length; k += 1) {
-                  //set the image data for the coloration of pixels
-                  imageData = voronoiContext.getImageData(rect.left, rect.top, voronoiCanvas.width, voronoiCanvas.height);
-                  data = imageData.data;
-
-                  currentDistance = Math.sqrt(Math.pow(i - generatingPoints[k].x - rect.left, 2) + Math.pow(j - generatingPoints[k].y - rect.top, 2));
+                  currentDistance = Math.abs(i - generatingPoints[k].x) + Math.abs(j - generatingPoints[k].y);
                   if (currentDistance < lowestDistance) {
                      lowestDistance = currentDistance;
                      whichK = k;
                   }
                }
-               data[0] = generatingPoints[whichK].color;
-               voronoiContext.putImageData(imageData, i, j);
+               // draw a 1x1 rectangle at the current pixel with the color of the closest generatingPoint.
+               voronoiContext.fillStyle = generatingPoints[whichK].color;
+               voronoiContext.fillRect(i, j, 1, 1);
+               lowestDistance = 361;
+               currentDistance = 0;
             }
+         }
+
+         for (k = 0; k < generatingPoints.length; k += 1) {
+            // Draw the outer circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 5, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = 'rgb(0, 0, 0)';
+            voronoiContext.fill();
+
+            // Draw the middle circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 4, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = 'rgb(255, 255, 255)';
+            voronoiContext.fill();
+
+            // Draw the inner circle.
+            voronoiContext.beginPath();
+            voronoiContext.arc(generatingPoints[k].x, generatingPoints[k].y, 3, 0, 2 * Math.PI, false);
+            voronoiContext.fillStyle = generatingPoints[k].color;
+            voronoiContext.fill();
          }
       };
 
@@ -202,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // When the snapshot button is clicked, show a snapshot of the canvas that the user can save as an image file.
       document.querySelector('#voronoi-snapshot').addEventListener('click', function () {
-         window.open(voronoiCanvas.toDataURL(), 'Canvas snapshot');
+         
       }, false);
    }());
 
